@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">CFT money</string>
+    <string name="name">Name</string>
+    <string name="code">Code</string>
+    <string name="nominal">Nominal</string>
+    <string name="previous">Previous</string>
+    <string name="value">Value</string>
+</resources>

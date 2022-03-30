@@ -50,6 +50,7 @@ class RecyclerAdapter(val context: Context) : RecyclerView.Adapter<RecyclerAdapt
 
     @SuppressLint("NotifyDataSetChanged")
     fun setValuteListItems(valuteList: MutableList<CurrencyModel>) {
+        changedData.clear()
         changedData.addAll(valuteList)
         notifyDataSetChanged()
     }

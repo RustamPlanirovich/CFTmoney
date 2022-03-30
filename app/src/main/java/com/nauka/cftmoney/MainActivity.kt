@@ -1,5 +1,6 @@
 package com.nauka.cftmoney
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -10,9 +11,11 @@ import com.nauka.cftmoney.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.IOException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -25,40 +28,103 @@ class MainActivity : AppCompatActivity() {
     lateinit var recyclerAdapter: RecyclerAdapter
     private lateinit var binding: ActivityMainBinding
 
+    @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         recyclerAdapter = RecyclerAdapter(this)
-
-        binding.recyclerview.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = recyclerAdapter
-        }
+        val apiInterface = ApiInterface.create().getValuteData()
+        val callbackList = ArrayList<CurrencyModel>()
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java, "main"
         ).build()
 
+        CoroutineScope(Dispatchers.IO).launch {
+            if (isReallyOnline()) {
+                apiLoadInfo(apiInterface, callbackList, db)
+            } else {
+                roomLoadData(db, callbackList)
+            }
+        }
 
-        val callbackList = ArrayList<CurrencyModel>()
-        val mainList = HashMap<String, CurrencyModel>()
+
+
+        binding.recyclerview.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = recyclerAdapter
+        }
 
 
 
-        val apiInterface = ApiInterface.create().getValuteData()
 
+
+
+        binding.swipeUpdate.setOnRefreshListener {
+            CoroutineScope(Dispatchers.IO).launch {
+                if (isReallyOnline()) {
+                    apiLoadInfo(apiInterface, callbackList, db)
+                } else {
+                    binding.swipeUpdate.isRefreshing = false
+                }
+            }
+
+        }
+
+        binding.swipeUpdate.setColorSchemeColors(
+            android.R.color.holo_red_dark,
+            android.R.color.holo_green_dark
+        )
+
+
+    }
+
+    fun roomLoadData(
+        db: AppDatabase,
+        callbackList: ArrayList<CurrencyModel>
+    ) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val local = db.mainDao().getAll()
+
+            withContext(Dispatchers.Main) {
+                if (local != null) {
+                    for (vals in local.valute.entries) {
+                        val mod = vals.value
+                        Log.d("Hel", callbackList.toString())
+                        callbackList.add(mod)
+
+
+                        local.apply {
+                            binding.currentDateTV.text = this.date?.parseDate()
+                            binding.previousDateTV.text = this.previousDate?.parseDate()
+                            binding.timestampTV.text = this.timestamp?.parseDate()
+                        }
+
+
+                        recyclerAdapter.setValuteListItems(callbackList)
+                    }
+                }
+            }
+        }
+    }
+
+    fun apiLoadInfo(
+        apiInterface: Call<Main>?,
+        callbackList: ArrayList<CurrencyModel>,
+        db: AppDatabase
+    ) {
         apiInterface?.enqueue(object : Callback<Main?> {
             override fun onResponse(call: Call<Main?>, response: Response<Main?>) {
 
                 Log.d("MyTag", response.body()?.valute.toString())
                 val currencyResponse = response.body()
 
-                Log.d("Hel", mainList.toString())
 
-                for (value in currencyResponse!!.valute!!.entries) {
+                for (value in currencyResponse!!.valute.entries) {
                     val model = value.value
+                    Log.d("Hel", callbackList.toString())
                     callbackList.add(model)
 
                 }
@@ -70,13 +136,19 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    db.mainDao().insertAll(callbackList)
+
+                    if (db.mainDao().getAll()?.date != null) {
+                        db.mainDao().update(response.body())
+                        Log.d("Data", "Update")
+                    } else {
+                        db.mainDao().insertAll(response.body())
+                        Log.d("Data", "Insert")
+                    }
+
                 }
 
-
-
-
                 recyclerAdapter.setValuteListItems(callbackList)
+                binding.swipeUpdate.isRefreshing = false
 
             }
 
@@ -84,10 +156,6 @@ class MainActivity : AppCompatActivity() {
                 Log.d("MyTag", "Failure " + t.toString())
             }
         })
-
-
-
-
     }
 }
 
@@ -99,4 +167,20 @@ fun String.parseDate(): String {
     } catch (e: ParseException) {
         LocalDateTime.now().toString()
     }
+}
+
+
+suspend fun isReallyOnline(): Boolean {
+
+    val runtime = Runtime.getRuntime()
+    try {
+        val ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8")
+        val exitValue = ipProcess.waitFor()
+        return exitValue == 0
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } catch (e: InterruptedException) {
+        e.printStackTrace()
+    }
+    return false
 }

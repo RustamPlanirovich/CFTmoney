@@ -5,4 +5,15 @@
     <string name="nominal">Nominal</string>
     <string name="previous">Previous</string>
     <string name="value">Value</string>
+    <string name="dateTV">Date</string>
+    <string name="previous_dateTV">Previous date</string>
+    <string name="timestampTV">Timestamp</string>
+    <string name="curretnDateNull">---</string>
+    <string name="previousDateTV">---</string>
+    <string name="timestampNull">---</string>
+    <string name="autoupdate">Enable autoupdate</string>
+    <string name="checkbox_pref">checkbox_pref</string>
+    <string name="tap_to_convert">Tap to convert</string>
+    <string name="sum_to_convertET_hint">0</string>
+    <string name="resultTvDefault">0</string>
 </resources>

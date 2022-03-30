@@ -1,0 +1,16 @@
+package com.nauka.cftmoney.util
+
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.util.*
+
+fun String.parseDate(): String {
+    return try {
+        val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())
+        val formatter = SimpleDateFormat("HH:mm:ss MMM dd yyyy", Locale.getDefault())
+        formatter.format(parser.parse(this))
+    } catch (e: ParseException) {
+        LocalDateTime.now().toString()
+    }
+}

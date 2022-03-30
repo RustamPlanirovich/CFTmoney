@@ -1,10 +1,12 @@
-package com.nauka.cftmoney
+package com.nauka.cftmoney.model.dto
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
+
 
 @Entity(tableName = "main")
 data class Main(

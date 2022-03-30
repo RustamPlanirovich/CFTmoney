@@ -1,11 +1,10 @@
-package com.nauka.cftmoney.Room.dao
+package com.nauka.cftmoney.model.room.dao
 
 import androidx.room.*
-import com.nauka.cftmoney.Main
+import com.nauka.cftmoney.model.dto.Main
 
 @Dao
 interface MainDao {
-
 
     @Query("SELECT * FROM main")
     fun getAll(): Main?

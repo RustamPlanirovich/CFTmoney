@@ -3,22 +3,11 @@ package com.nauka.cftmoney
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.nauka.cftmoney.model.dto.CurrencyModel
 import java.lang.reflect.Type
 
 
 class OtherServicesTypeConverter {
-
-//    @TypeConverter
-//    fun stringToList(data: String): HashMap<String, CurrencyModel> {
-//        val mapType = object : TypeToken<HashMap<String, CurrencyModel>>() {}.type
-//        return Gson().fromJson(data, mapType)
-//    }
-//
-//    @TypeConverter
-//    fun listToString(objects: HashMap<String, CurrencyModel>): String {
-//        val gson = Gson()
-//        return gson.toJson(objects)
-//    }
 
     @TypeConverter
     fun stringToListServer(data: String?): HashMap<String, CurrencyModel>? {
@@ -46,17 +35,4 @@ class OtherServicesTypeConverter {
         return gson.toJson(list)
     }
 
-//    @TypeConverter
-//    @JvmStatic
-//    fun stringToList(data: String): ArrayList<Main> {
-//        val mapType = object : TypeToken<ArrayList<Main>>() {}.type
-//        return Gson().fromJson(data, mapType)
-//    }
-//
-//    @TypeConverter
-//    @JvmStatic
-//    fun listToString(objects: ArrayList<Main>): String {
-//        val gson = Gson()
-//        return gson.toJson(objects)
-//    }
 }

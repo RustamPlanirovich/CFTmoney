@@ -8,6 +8,8 @@ class Repository @Inject constructor(
     private val service: ApiInterface,
     private val db: AppDatabase
 ) {
+    //Функция для получения данных из сети
     fun getAPI() = service.getValuteData()
+    //Функция для получения данных из базы данных
     fun getDatabase() = db.mainDao()
 }

@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.util.*
 
+//Функция расширения для преобразования полученных дат в более понятный вид
 fun String.parseDate(): String {
     return try {
         val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX", Locale.getDefault())

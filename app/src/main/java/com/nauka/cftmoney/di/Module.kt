@@ -20,11 +20,13 @@ abstract class Module() {
 
 
     companion object {
+        //Получаем базовый url адрес
         @Provides
         fun provideUrl(): String {
             return Constants.BASE_URL
         }
 
+        //Создаем экземпляр retrofit для иньекции
         @Provides
         @Singleton
         fun provideRetrofit(): ApiInterface {
@@ -35,6 +37,7 @@ abstract class Module() {
             return retrofit.create(ApiInterface::class.java)
         }
 
+        //Создаем экземпляр db room для иньекции
         @Provides
         @Singleton
         fun provideRoom(@ApplicationContext applicationContext: Context): AppDatabase {

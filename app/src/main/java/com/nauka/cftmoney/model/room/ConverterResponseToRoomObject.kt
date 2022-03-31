@@ -7,8 +7,18 @@ import com.nauka.cftmoney.model.dto.CurrencyModel
 import java.lang.reflect.Type
 
 
+//Конвернет для созранения полученного ответа в базу данных
+/*2 конвертера
+1 - конвертер
+listServerToString - конвертирование HashMap<String, CurrencyModel> в String
+stringToListServer - конвертирование обратно в Object типа HashMap<String, CurrencyModel>
+2 - конвертер
+fromString - конвертируем String в List<String>
+fromList - конвертируем List<String> в String
+*/
 class OtherServicesTypeConverter {
 
+    //1 конвертер
     @TypeConverter
     fun stringToListServer(data: String?): HashMap<String, CurrencyModel>? {
         val listType: Type = object :
@@ -22,6 +32,7 @@ class OtherServicesTypeConverter {
         return gson.toJson(someObjects)
     }
 
+    //2 конвертер
     @TypeConverter
     fun fromString(value: String?): List<String> {
         val listType = object :

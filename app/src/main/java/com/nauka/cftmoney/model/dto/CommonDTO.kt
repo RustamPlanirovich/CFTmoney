@@ -5,9 +5,8 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import kotlinx.serialization.Serializable
 
-
+//Общий дата класс и для retrofit и для room
 @Entity(tableName = "main")
 data class Main(
 

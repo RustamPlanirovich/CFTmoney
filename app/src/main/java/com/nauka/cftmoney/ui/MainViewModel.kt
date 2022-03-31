@@ -1,5 +1,6 @@
 package com.nauka.cftmoney.ui
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,12 +32,11 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
         //В другом потоке (не в основном)
         viewModelScope.launch(Dispatchers.IO) {
             //Проверяем подключение к интернету
-            if (checkInternetConnection(200)) {
-                //Если соединение есть - загружаем данные из сети
-                apiLoadInfo()
-            } else {
-                //Если соединения нет - загружаем данные из базы данных
-                roomLoadInfo()
+            checkInternetConnection(200).runCatching {
+                when (this) {
+                    true -> apiLoadInfo() //Если соединение есть - загружаем данные из сети
+                    false -> roomLoadInfo() //Если соединения нет - загружаем данные из базы данных
+                }
             }
         }
     }
@@ -54,6 +54,7 @@ class MainViewModel @Inject constructor(private val repository: Repository) : Vi
                     if (it.isSuccessful && it.code() == 200) {
                         //Записываем полученные данные в переменную commonData
                         commonData.postValue(it.body())
+                        Log.d("data", "${db.hashCode() != it.body()?.hashCode()}")
                         //Если в базе данных есть поле date и оно не равно null
                         if (db?.date != null) {
                             //Обновляем данные в базе данных теми данными что получили при запросу

@@ -96,6 +96,7 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.AdapterListener {
                     adapter = recyclerAdapter
                 }
                 //Отправляем полученные данные callbackList в адаптер
+//                recyclerAdapter.setValuteListItems(callbackList)
                 recyclerAdapter.setValuteListItems(callbackList)
             }
         }
@@ -105,24 +106,26 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.AdapterListener {
             //Производим проверку на наличие подключения интернета не в основном потоке
             CoroutineScope(Dispatchers.IO).launch {
                 //Если подключение есть
-                if (viewModel.checkInternetConnection(200)) {
-                    //В основном потоке
-                    withContext(Dispatchers.Main) {
-                        //Выполняем загрузку данных из сети
-                        viewModel.apiLoadInfo()
-                        //После загрузки останавливаем анимацию обновления
-                        binding.swipeUpdate.isRefreshing = false
-                    }
-                } else {
-                    //Если подключения нет
-                    withContext(Dispatchers.Main) {
-                        /*Загружаем данные из базы данных
-                        Не знаю зачем сделал - чтобы было*/
-                        viewModel.roomLoadInfo()
-                        //После загрузки останавливаем анимацию обновления
-                        binding.swipeUpdate.isRefreshing = false
-                    }
+//                if (viewModel.checkInternetConnection(200)) {
+
+
+                //В основном потоке
+                withContext(Dispatchers.Main) {
+//Выполняем загрузку данных из сети
+                    viewModel.apiLoadInfo()
+                    //После загрузки останавливаем анимацию обновления
+                    binding.swipeUpdate.isRefreshing = false
                 }
+//                } else {
+//                    //Если подключения нет
+//                    withContext(Dispatchers.Main) {
+//                        /*Загружаем данные из базы данных
+//                        Не знаю зачем сделал - чтобы было*/
+//                        viewModel.roomLoadInfo()
+//                        //После загрузки останавливаем анимацию обновления
+//                        binding.swipeUpdate.isRefreshing = false
+//                    }
+//                }
             }
         }
     }
